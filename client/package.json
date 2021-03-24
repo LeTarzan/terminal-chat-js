@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "user01": "node index.js --userName letarzan --room salinha --hostUri https://localhost:9898"
   },
   "keywords": [],
   "author": "",
