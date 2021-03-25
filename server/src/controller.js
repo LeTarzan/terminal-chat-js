@@ -1,6 +1,9 @@
+import { constants } from "./constants.js"
+
 export default class Controller {
   #users = new Map()
-
+  #rooms = new Map()
+  
   constructor({ socketServer }) {
     this.socketServer = socketServer
   }
@@ -17,6 +20,27 @@ export default class Controller {
     socket.on('error', this.#onSocketClosed(id))
   }
 
+  async joinRoom(socketId, data){
+    const userData = data
+    console.log(`${userData.userName} joined`, [socketId])
+    const {roomId} = userData 
+    const users = this.#joinUserOnRoom(roomId, userData)
+    const user = this.#updateGlobalUserData(socketId, userData)
+    const currentUser = Array.from(users.values())
+      .map(({id, userName}) => ({userName, id}))
+
+    // update user that joined on room that have users already joined
+    this.socketServer.sendMessage(user.socket, constants.event.UPDATE_USERS, currentUser)
+  }
+
+  #joinUserOnRoom(roomId, user){
+    const usersOnRoom = this.#rooms.get(roomId) ?? new Map()
+    usersOnRoom.set(user.id, user)
+    this.#rooms.set(roomId, usersOnRoom)
+
+    return usersOnRoom
+  }
+
   #onSocketClosed(id) {
     return data => {
       console.log('onSocketClosed', data.toString())
@@ -24,7 +48,12 @@ export default class Controller {
   }
   #onSocketData(id) {
     return data => {
-      console.log('onSocketData', data.toString())
+      try {
+        const { event, message } = JSON.parse(data)
+        this[event](id, message)
+      } catch (error) {
+        console.log(`Wrong event format!`, data.toString())
+      }
     }
   }
 
