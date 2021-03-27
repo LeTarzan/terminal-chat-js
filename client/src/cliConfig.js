@@ -1,5 +1,7 @@
+const PRODUCTION_URL = "http://localhost:9898"
+
 export default class CliConfig {
-  constructor({ userName, hostUri, room }) {
+  constructor({ userName, hostUri = PRODUCTION_URL, room }) {
     this.userName = userName
     this.room = room
 
