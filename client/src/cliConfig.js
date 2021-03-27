@@ -16,7 +16,7 @@ export default class CliConfig {
       const COMMAND_PREFFIX = '--'
       const index = parseInt(key)
       const command = args[key]
-
+ 
       if (!command.includes(COMMAND_PREFFIX)) continue
 
       cmd.set(

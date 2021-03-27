@@ -9,6 +9,7 @@ export default class SocketServer{
 
   async sendMessage(socket, event, message){
     const data = JSON.stringify({event, message})
+    console.log(data)
     socket.write(`${data}\n`)
   }
 
